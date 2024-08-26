@@ -2,18 +2,31 @@ import React, { useState, useSyncExternalStore } from "react";
 import petsData from "../petsData";
 import PetItem from "./PetItem";
 import Modal from "./Modal";
+import axios from "axios";
+import { getAllPets } from "../API/pets";
 
 const PetList = () => {
   const [query, setQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  const petList = petsData
+  // states the button for all pets to be shown on click
+  const [pets, setpets] = useState([]);
+  const getpets = async () => {
+    const res = await getAllPets();
+    setpets(res);
+    return pets;
+  };
+  // const displayPets = pets.map((pet)=>( <div>{pets}</div>))
+  
+
+  const petList = pets
     .filter((pet) => pet.name.toLowerCase().includes(query.toLowerCase()))
     .map((pet) => <PetItem pet={pet} key={pet.id} />);
   return (
     <>
       <div className="bg-[#F9E3BE] flex flex-col justify-center items-center ">
         <div className="w-[76vw] flex h-[30px] mb-[30px] mt-[30px]">
+          <button onClick={getpets}>get all pets</button>
           <input
             onChange={(e) => {
               setQuery(e.target.value);
