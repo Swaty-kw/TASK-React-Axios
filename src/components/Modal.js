@@ -1,11 +1,22 @@
 import React, { useState } from "react";
 import Input from "./Input";
+import { createPost, getAllPets, getOnePet } from "../API/pets";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const Modal = ({ show, setShowModal }) => {
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [image, setImage] = useState("");
   const [available, setAvailable] = useState(0);
+  const newQuery = useQueryClient;
+  const { mutate } = useMutation({
+    mutationKey: ["createPost"],
+    mutationFn: () => createPost(name, image, type, available),
+    onSuccess: () => {
+      newQuery.invalidateQueries(["getAllPets"]);
+    },
+  });
+
   if (!show) return "";
   return (
     <div
@@ -47,7 +58,10 @@ const Modal = ({ show, setShowModal }) => {
           }}
         />
 
-        <button className="w-[70px] border border-black rounded-md ml-auto mr-5 hover:bg-green-400">
+        <button
+          onClick={mutate}
+          className="w-[70px] border border-black rounded-md ml-auto mr-5 hover:bg-green-400"
+        >
           Submit
         </button>
       </div>

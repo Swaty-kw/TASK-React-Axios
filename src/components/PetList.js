@@ -3,30 +3,44 @@ import petsData from "../petsData";
 import PetItem from "./PetItem";
 import Modal from "./Modal";
 import axios from "axios";
-import { getAllPets } from "../API/pets";
+import { getAllPets, getPetId } from "../API/pets";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 const PetList = () => {
   const [query, setQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
-
-  // states the button for all pets to be shown on click
   const [pets, setpets] = useState([]);
-  const getpets = async () => {
-    const res = await getAllPets();
-    setpets(res);
-    return pets;
-  };
-  // const displayPets = pets.map((pet)=>( <div>{pets}</div>))
-  
+  const { getPetId } = useParams();
 
-  const petList = pets
-    .filter((pet) => pet.name.toLowerCase().includes(query.toLowerCase()))
-    .map((pet) => <PetItem pet={pet} key={pet.id} />);
+  //const getpets = async () => {
+  //const res = await getAllPets();
+  //setpets(res);
+  //return pets;
+
+  // const getPetIdnum = async () => {
+  //   const res = await getPetId(id);
+  //   return res;
+  //};
+  //const handlePetId = async () => {};
+  // const displayPets = pets.map((pet)=>( <div>{pets}</div>))
+  const { data } = useQuery({
+    queryKey: ["getAllPets"],
+    queryFn: getAllPets,
+  });
+  const petList = data
+    ?.filter((pet) => pet.name.toLowerCase().includes(query.toLowerCase()))
+    ?.map((pet) => <PetItem pet={pet} key={pet.id} />);
   return (
     <>
+      <div>
+        <input placeholder="Eanter pet id"></input>
+        <button>Search</button>
+      </div>
+
       <div className="bg-[#F9E3BE] flex flex-col justify-center items-center ">
         <div className="w-[76vw] flex h-[30px] mb-[30px] mt-[30px]">
-          <button onClick={getpets}>get all pets</button>
+          <button>get all pets</button>
           <input
             onChange={(e) => {
               setQuery(e.target.value);
